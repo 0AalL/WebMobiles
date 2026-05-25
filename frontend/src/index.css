@@ -511,6 +511,7 @@ button:disabled {
     opacity: 0;
     transform: translateY(8px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -612,7 +613,7 @@ button:disabled {
   margin: 0 0 12px;
 }
 
-.detail-content h3 + p {
+.detail-content h3+p {
   color: var(--muted);
   line-height: 1.7;
 }
@@ -627,7 +628,7 @@ button:disabled {
   font-size: 2rem;
 }
 
-.detail-booking-card > span,
+.detail-booking-card>span,
 .detail-booking-card p {
   display: block;
   color: var(--muted);
@@ -828,6 +829,7 @@ button:disabled {
 }
 
 @media (max-width: 1100px) {
+
   .hero-panel,
   .property-card,
   .search-bar,
@@ -862,6 +864,7 @@ button:disabled {
 }
 
 @media (max-width: 720px) {
+
   .topbar,
   .topbar__actions,
   .modal-actions,
@@ -886,4 +889,81 @@ button:disabled {
   .property-card__image {
     min-height: 210px;
   }
+}
+
+.primary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  margin-top: 18px;
+  padding: 12px 18px;
+
+  border-radius: 16px;
+  border: 1px solid rgba(111, 224, 163, 0.2);
+
+  color: #04110a;
+  font-weight: 700;
+
+  background: linear-gradient(135deg,
+      var(--accent) 0%,
+      #c6f6dc 100%);
+
+  box-shadow: 0 14px 30px rgba(111, 224, 163, 0.2);
+
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    opacity 180ms ease;
+}
+
+.primary-button:hover {
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 16px 40px rgba(111, 224, 163, 0.3);
+}
+
+.primary-button:active {
+  transform: scale(0.98);
+}
+
+.verify-status {
+  margin-top: 18px;
+  padding: 16px 18px;
+  border-radius: 18px;
+  border: 1px solid transparent;
+
+  backdrop-filter: blur(10px);
+
+  animation: fadeInUp 220ms ease;
+}
+
+.verify-status--success {
+  background: linear-gradient(180deg,
+      rgba(111, 224, 163, 0.16),
+      rgba(46, 166, 109, 0.12));
+
+  border-color: rgba(111, 224, 163, 0.28);
+
+  box-shadow:
+    0 10px 30px rgba(111, 224, 163, 0.08);
+}
+
+.verify-status--error {
+  background: linear-gradient(180deg,
+      rgba(255, 138, 138, 0.12),
+      rgba(255, 120, 120, 0.08));
+
+  border-color: rgba(255, 138, 138, 0.22);
+
+  box-shadow:
+    0 10px 30px rgba(255, 138, 138, 0.08);
+}
+
+.verify-status .success-text,
+.verify-status .error-text {
+  margin: 0;
+  font-weight: 600;
 }

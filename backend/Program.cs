@@ -1,69 +1,12 @@
 using backend.Config;
 using backend.Services;
-using DotNetEnv;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//
-// Cargar variables de entorno dinámicamente
-//
 
-var envFile = File.Exists(".env")
-    ? ".env"
-    : ".env.production";
-
-if (File.Exists(envFile))
-{
-    Env.Load(envFile);
-    Console.WriteLine($"Variables cargadas desde: {envFile}");
-}
-else
-{
-    Console.WriteLine("No se encontró ningún archivo .env");
-}
-
-// Sobrescribir configuración desde variables de entorno
-builder.Configuration["DatabaseSettings:ConnectionString"] =
-    Environment.GetEnvironmentVariable("MONGO_CONNECTION");
-
-builder.Configuration["DatabaseSettings:DatabaseName"] =
-    Environment.GetEnvironmentVariable("MONGO_DATABASE");
-
-builder.Configuration["Jwt:Key"] =
-    Environment.GetEnvironmentVariable("JWT_KEY");
-
-builder.Configuration["Jwt:Issuer"] =
-    Environment.GetEnvironmentVariable("JWT_ISSUER");
-
-builder.Configuration["Jwt:Audience"] =
-    Environment.GetEnvironmentVariable("JWT_AUDIENCE");
-
-builder.Configuration["Frontend:BaseUrl"] =
-    Environment.GetEnvironmentVariable("FRONTEND_URL");
-
-builder.Configuration["EmailSettings:Host"] =
-    Environment.GetEnvironmentVariable("EMAIL_HOST");
-
-builder.Configuration["EmailSettings:Port"] =
-    Environment.GetEnvironmentVariable("EMAIL_PORT");
-
-builder.Configuration["EmailSettings:SenderName"] =
-    Environment.GetEnvironmentVariable("EMAIL_SENDER_NAME");
-
-builder.Configuration["EmailSettings:SenderEmail"] =
-    Environment.GetEnvironmentVariable("EMAIL_SENDER_EMAIL");
-
-builder.Configuration["EmailSettings:Username"] =
-    Environment.GetEnvironmentVariable("EMAIL_USERNAME");
-
-builder.Configuration["EmailSettings:Password"] =
-    Environment.GetEnvironmentVariable("EMAIL_PASSWORD");
-
-builder.Configuration["EmailSettings:UseSsl"] =
-    Environment.GetEnvironmentVariable("EMAIL_USE_SSL");
 
 // Config Mongo
 builder.Services.Configure<DatabaseSettings>(
@@ -82,32 +25,37 @@ builder.Services.AddSingleton<BookingService>();
 // Controllers
 builder.Services.AddControllers();
 
+// JWT
 var jwtKey = builder.Configuration["Jwt:Key"];
 
 if (string.IsNullOrWhiteSpace(jwtKey))
 {
     throw new InvalidOperationException(
-        "Falta configurar JWT_KEY en el archivo .env");
+        "Falta configurar Jwt:Key");
 }
 
-// JWT Auth
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
+        options.TokenValidationParameters =
+            new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
 
-            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-            ValidAudience = builder.Configuration["Jwt:Audience"],
+                ValidIssuer =
+                    builder.Configuration["Jwt:Issuer"],
 
-            IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(jwtKey))
-        };
+                ValidAudience =
+                    builder.Configuration["Jwt:Audience"],
+
+                IssuerSigningKey =
+                    new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(jwtKey))
+            };
     });
 
 // Swagger
@@ -115,7 +63,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // CORS
-var frontendUrl = builder.Configuration["Frontend:BaseUrl"];
+var frontendUrl =
+    builder.Configuration["Frontend:BaseUrl"];
 
 builder.Services.AddCors(options =>
 {
@@ -130,7 +79,7 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// Swagger Dev
+// Swagger solo en development
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

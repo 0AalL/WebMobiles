@@ -7,10 +7,25 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//  Cargar variables del .env
-Env.Load();
+//
+// Cargar variables de entorno dinámicamente
+//
 
-// Sobrescribir configuración desde .env
+var envFile = File.Exists(".env")
+    ? ".env"
+    : ".env.production";
+
+if (File.Exists(envFile))
+{
+    Env.Load(envFile);
+    Console.WriteLine($"Variables cargadas desde: {envFile}");
+}
+else
+{
+    Console.WriteLine("No se encontró ningún archivo .env");
+}
+
+// Sobrescribir configuración desde variables de entorno
 builder.Configuration["DatabaseSettings:ConnectionString"] =
     Environment.GetEnvironmentVariable("MONGO_CONNECTION");
 
@@ -50,7 +65,7 @@ builder.Configuration["EmailSettings:Password"] =
 builder.Configuration["EmailSettings:UseSsl"] =
     Environment.GetEnvironmentVariable("EMAIL_USE_SSL");
 
-//  Config Mongo
+// Config Mongo
 builder.Services.Configure<DatabaseSettings>(
     builder.Configuration.GetSection("DatabaseSettings"));
 
@@ -64,14 +79,15 @@ builder.Services.AddSingleton<RoomService>();
 builder.Services.AddSingleton<PropertyService>();
 builder.Services.AddSingleton<BookingService>();
 
-//  Controllers
+// Controllers
 builder.Services.AddControllers();
 
 var jwtKey = builder.Configuration["Jwt:Key"];
 
 if (string.IsNullOrWhiteSpace(jwtKey))
 {
-    throw new InvalidOperationException("Falta configurar JWT_KEY en el archivo .env");
+    throw new InvalidOperationException(
+        "Falta configurar JWT_KEY en el archivo .env");
 }
 
 // JWT Auth
@@ -94,7 +110,7 @@ builder.Services
         };
     });
 
-//  Swagger
+// Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

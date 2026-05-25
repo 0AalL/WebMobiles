@@ -7,7 +7,6 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 
-
 // Config Mongo
 builder.Services.Configure<DatabaseSettings>(
     builder.Configuration.GetSection("DatabaseSettings"));
